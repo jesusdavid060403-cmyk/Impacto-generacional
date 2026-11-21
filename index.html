@@ -122,7 +122,7 @@ const v=$('#v'),cv=$('#cv');if(C.VIDEO)v.src=C.VIDEO;if(C.POSTER)cv.style.backgr
 const ev=e=>sb&&safe(sb.from('video_events').insert({visitor_id:vid,event:e}));
 cv.onclick=()=>{cv.classList.add('h');v.play()};v.onplay=()=>ev('play');v.onpause=()=>{if(!v.ended)ev('pause')};v.onended=()=>ev('ended');
 const gal=Array.isArray(C.GALLERY)?C.GALLERY:[];
-$('#g').innerHTML=[0,1,2,3,4,5].map(i=>`<div class="c"><div class="ph" ${gal[i]?`style="background-image:url(${gal[i]})"`:''}></div>${gal[i]?'':`<span>0${i+1}</span>`}</div>`).join('')+'<div class="c cx sc">su generación</div>';
+$('#g').innerHTML=[0,1,2,3,4,5].map(i=>`<div class="c"><div class="ph" ${gal[i]?`style="background-image:url(${gal[i]})"`:''}></div>${gal[i]?'':`<span>0${i+1}</span>`}</div>`).join('')+'<div class="c cx sc">una generación de impacto</div>';
 const b=$('#cta'),ty=$('#ty');
 function done(anim){b.classList.add('on');b.textContent='✓ Estás dentro';b.disabled=true;
  ty.textContent='¡Te esperamos este domingo!';if(anim&&window.gsap)gsap.from(ty,{y:50,opacity:0,scale:.8,rotate:-4,duration:1.1,ease:'expo.out'})}
