@@ -1,7 +1,7 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Impacto Generacional</title><meta name="theme-color" content="#03050f">
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;500;700;900&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
-@font-face{font-family:'Amsterdam Four';src:local('Amsterdam Four'),url(assets/AmsterdamFour.woff2)}
+@font-face{font-family:'Amsterdam Four';src:local('Amsterdam Four'),url(AmsterdamFour.woff2)}
 :root{--bg:#03050f;--navy:#050a30;--blue:#0a1f8f;--el:#2340ff;--ice:#c9e8ff;--gold:#d4a53a;--silver:#b9bec7;--u:22vw}
 *{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
 body{background:var(--bg);color:#fff;font:400 1rem/1.5 Roboto,sans-serif;overflow-x:hidden}
@@ -11,7 +11,7 @@ body::after{content:'';position:fixed;inset:0;z-index:50;pointer-events:none;opa
 .ln{display:block;overflow:hidden;padding-top:.04em}.in{display:block}
 .out{color:transparent;-webkit-text-stroke:max(1.5px,.012em) currentColor}
 section{position:relative;padding:14vh 5vw;overflow:hidden}
-nav{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;justify-content:space-between;padding:calc(16px + env(safe-area-inset-top)) 5vw 16px;mix-blend-mode:difference;font:700 .68rem Roboto;letter-spacing:.3em;text-transform:uppercase}
+nav{position:fixed;inset:0 0 auto 0;z-index:40;display:flex;justify-content:space-between;gap:16px;padding:calc(16px + env(safe-area-inset-top)) 5vw 16px;mix-blend-mode:difference;font:700 .68rem Roboto;letter-spacing:.3em;text-transform:uppercase}
 nav a{color:#fff;text-decoration:none}
 #pr{position:fixed;left:0;top:0;height:3px;width:100%;background:var(--gold);transform:scaleX(0);transform-origin:left;z-index:60}
 /* HERO */
@@ -76,7 +76,7 @@ nav a{color:#fff;text-decoration:none}
 #core h2{font-size:clamp(3rem,14vw,12rem);letter-spacing:-.015em}#core .o{color:transparent;-webkit-text-stroke:2px #fff}#core .sc{color:#fff;font-size:clamp(2rem,9vw,5rem);margin-top:4vh;align-self:flex-end}
 /* INVITACIÓN */
 #inv{min-height:100svh;display:flex;flex-direction:column;justify-content:center;gap:3vh}
-#inv .d{font-size:clamp(3.2rem,16vw,14rem);color:var(--silver);letter-spacing:-.02em}#inv .t{font-size:clamp(3rem,15vw,13rem);color:var(--gold)}
+#inv .d{font-size:clamp(3.2rem,16vw,14rem);color:var(--silver);letter-spacing:-.02em}#inv .t{font-size:clamp(2.6rem,11vw,9.5rem);color:var(--gold)}
 #inv .p{font:700 clamp(.8rem,3vw,1.1rem) Roboto;letter-spacing:.3em;text-transform:uppercase;color:var(--ice)}
 #cta{align-self:flex-start;position:relative;font:400 clamp(1.7rem,8vw,3rem) Anton;letter-spacing:.04em;padding:22px 44px;background:var(--gold);color:#03050f;border:0;cursor:pointer;text-transform:uppercase;transition:background .3s;clip-path:polygon(0 0,100% 0,100% 68%,92% 100%,0 100%)}
 #cta:hover{background:#fff}#cta:active{transform:scale(.96)}
