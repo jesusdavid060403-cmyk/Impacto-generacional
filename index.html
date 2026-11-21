@@ -82,6 +82,7 @@ nav a{color:#fff;text-decoration:none}
 #cta:hover{background:#fff}#cta:active{transform:scale(.96)}
 #cta.on{background:transparent;color:var(--gold);box-shadow:inset 0 0 0 2px var(--gold);cursor:default}
 #ty{font-family:'Amsterdam Four','Great Vibes',cursive;font-size:clamp(2.2rem,10vw,5rem);color:var(--gold);min-height:1.3em}
+#cnt{font:700 .85rem Roboto;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
 footer{padding:4vh 5vw 6vh;font:.68rem Roboto;letter-spacing:.3em;color:#778;text-transform:uppercase}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
@@ -103,7 +104,7 @@ footer{padding:4vh 5vw 6vh;font:.68rem Roboto;letter-spacing:.3em;color:#778;tex
 <section id="gal" data-bg="#eceff4" data-fg="#050a30"><h2 class="a ln"><span class="in">Galería</span></h2><div class="g" id="g"></div></section>
 <section id="core" data-bg="#2340ff" data-fg="#ffffff"><h2 class="a"><span class="ln"><span class="in">¡Dios tiene</span></span><span class="ln"><span class="in o">un propósito</span></span><span class="ln"><span class="in">con tu</span></span><span class="ln"><span class="in" style="color:var(--ice)">generación!</span></span></h2><div class="sc rv">tu historia empieza aquí</div></section>
 <section id="inv" data-bg="#03050f" data-fg="#ffffff"><div class="a d ln"><span class="in out">Domingo</span></div><div class="a t ln"><span class="in">¡No faltes!</span></div>
-<div class="p rv">Auditorio Luz y Paz</div><button id="cta" class="rv">¡Cuenta conmigo!</button><div id="ty"></div></section>
+<div class="p rv">Auditorio Luz y Paz</div><button id="cta" class="rv">¡Cuenta conmigo!</button><div id="ty"></div><div id="cnt">Confirmados: <span id="cntNum">0</span></div></section>
 <footer>Dios tiene un propósito con tu generación</footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
@@ -123,13 +124,18 @@ const ev=e=>sb&&safe(sb.from('video_events').insert({visitor_id:vid,event:e}));
 cv.onclick=()=>{cv.classList.add('h');v.play()};v.onplay=()=>ev('play');v.onpause=()=>{if(!v.ended)ev('pause')};v.onended=()=>ev('ended');
 const gal=Array.isArray(C.GALLERY)?C.GALLERY:[];
 $('#g').innerHTML=[0,1,2,3,4,5].map(i=>`<div class="c"><div class="ph" ${gal[i]?`style="background-image:url(${gal[i]})"`:''}></div>${gal[i]?'':`<span>0${i+1}</span>`}</div>`).join('')+'<div class="c cx sc">Una generación de impacto</div>';
-const b=$('#cta'),ty=$('#ty');
+const b=$('#cta'),ty=$('#ty'),cntNum=$('#cntNum');
+let total=Number(localStorage.getItem('ig_count')||0);
+if(cntNum)cntNum.textContent=total;
 function done(anim){b.classList.add('on');b.textContent='✓ Estás dentro';b.disabled=true;
  ty.textContent='¡Te esperamos este domingo!';if(anim&&window.gsap)gsap.from(ty,{y:50,opacity:0,scale:.8,rotate:-4,duration:1.1,ease:'expo.out'})}
 if(localStorage.getItem('ig_in'))done(false);
 b.onclick=async()=>{if(b.disabled)return;b.disabled=true;
  if(sb){const{error}=await sb.from('intents').insert({visitor_id:vid});
-  if(error&&error.code!=='23505'){b.disabled=false;ty.textContent='Sin conexión, intenta de nuevo';return}}
+  if(error&&error.code!=='23505'){console.warn('Supabase no guardó el registro:',error.message)}}
+ total+=1;
+ localStorage.setItem('ig_count',total);
+ if(cntNum)cntNum.textContent=total;
  localStorage.setItem('ig_in',1);done(true)};
 document.querySelectorAll('.sp').forEach(e=>{e.innerHTML=[...e.textContent].map(c=>`<i class="ch" style="display:inline-block;font-style:normal">${c}</i>`).join('')});
 if(window.gsap&&!matchMedia('(prefers-reduced-motion:reduce)').matches){gsap.registerPlugin(ScrollTrigger);
