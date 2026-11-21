@@ -112,7 +112,7 @@ footer{padding:4vh 5vw 6vh;font:.68rem Roboto;letter-spacing:.3em;color:#778;tex
 <script src="config.js"></script>
 <script>
 const $=s=>document.querySelector(s),C=window.CFG||{};
-let sb=null;try{if(C.SUPABASE_URL&&C.SUPABASE_ANON_KEY)sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY)}catch(e){}
+let sb=null;try{if(C.SUPABASE_URL&&C.SUPABASE_ANON_KEY&&!C.SUPABASE_URL.includes('TU-PROYECTO'))sb=supabase.createClient(C.SUPABASE_URL,C.SUPABASE_ANON_KEY)}catch(e){}
 let vid=localStorage.getItem('ig_vid');const ret=!!vid;if(!vid){vid=crypto.randomUUID();localStorage.setItem('ig_vid',vid)}
 const safe=p=>{try{return Promise.resolve(p).catch(()=>({}))}catch(e){return Promise.resolve({})}};
 if(sb&&!sessionStorage.getItem('ig_s')){sessionStorage.setItem('ig_s',1);
