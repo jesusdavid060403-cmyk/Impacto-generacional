@@ -1,0 +1,54 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Admin · Impacto Generacional</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--el:#2340ff;--gold:#d4a53a;--silver:#b9bec7}*{box-sizing:border-box;margin:0}
+body{background:#03050f;color:#fff;font:400 .95rem Roboto,sans-serif;padding:20px}
+h1,h2,.n{font-family:Anton,sans-serif;text-transform:uppercase;font-weight:400}h1{font-size:2rem}
+input,button{font:inherit;padding:12px;border:1px solid #ffffff33;background:#0b1233;color:#fff}button{cursor:pointer;background:var(--el);border:0;font-weight:700}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin:16px 0;align-items:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.c{border:1px solid #ffffff22;padding:16px;background:#070d28}.c small{color:var(--silver);letter-spacing:.1em;text-transform:uppercase;font-size:.65rem}
+.n{font-size:2.8rem;line-height:1.1}.c.g .n{color:var(--gold)}.c.a .n{color:#7fe3a0}
+canvas{width:100%;height:240px;background:#070d28;border:1px solid #ffffff22;margin:16px 0}
+table{width:100%;border-collapse:collapse;font-size:.8rem}td,th{padding:8px;border-bottom:1px solid #ffffff14;text-align:left}
+#reg{display:none}.big{font-size:1.2rem;padding:18px 28px;background:var(--gold);color:#03050f}
+</style></head><body>
+<div id="lg"><h1>Acceso admin</h1><div class="row"><input id="em" type="email" placeholder="correo"><input id="pw" type="password" placeholder="contraseña"><button id="go">Entrar</button></div><p id="er" style="color:#f77"></p></div>
+<div id="reg"><div class="row"><h1 style="flex:1">Panel</h1><button id="out">Salir</button></div>
+<div class="row">Desde <input type="date" id="d1"> Hasta <input type="date" id="d2"><button id="ap">Filtrar</button><small id="up" style="color:var(--silver)"></small></div>
+<div class="grid" id="k"></div>
+<canvas id="ch"></canvas>
+<h2>Asistencia real (presencial)</h2>
+<div class="row"><button class="big" id="plus">+ Registrar asistente</button><button id="minus">− Deshacer último</button><span>Hoy: <b id="today">0</b></span></div>
+<h2>Historial</h2><table id="t"></table></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<script src="config.js"></script>
+<script>
+const $=s=>document.querySelector(s),sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
+const day=s=>new Date(s).toLocaleDateString('en-CA'),today=()=>new Date().toLocaleDateString('en-CA');
+$('#d1').value=day(Date.now()-13*864e5);$('#d2').value=today();
+async function init(){const{data}=await sb.auth.getSession();show(!!data.session)}
+function show(ok){$('#lg').style.display=ok?'none':'block';$('#reg').style.display=ok?'block':'none';if(ok){load();clearInterval(window.t);window.t=setInterval(load,15000)}}
+$('#go').onclick=async()=>{const{error}=await sb.auth.signInWithPassword({email:$('#em').value,password:$('#pw').value});$('#er').textContent=error?'Credenciales inválidas':'';if(!error)show(true)};
+$('#out').onclick=async()=>{await sb.auth.signOut();show(false)};$('#ap').onclick=load;
+async function q(t,col='created_at'){const a=new Date($('#d1').value+'T00:00:00').toISOString(),b=new Date($('#d2').value+'T23:59:59').toISOString();
+ const{data}=await sb.from(t).select('*').gte(col,a).lte(col,b).order(col,{ascending:false}).limit(10000);return data||[]}
+async function load(){const[v,i,a,e]=await Promise.all([q('visits'),q('intents'),q('attendance'),q('video_events')]);
+ const qr=v.filter(x=>x.source==='qr'),uq=new Set(v.map(x=>x.visitor_id)).size,rec=v.filter(x=>x.is_returning).length;
+ const K=[['Visitas QR',qr.length],['Visitas totales',v.length],['Únicos est.',uq],['Recurrentes',rec],['Intenciones',i.length,'g'],['Asistencias reales',a.length,'a'],['Interacc. video',e.length]];
+ $('#k').innerHTML=K.map(([l,n,c])=>`<div class="c ${c||''}"><small>${l}</small><div class="n">${n}</div></div>`).join('');
+ $('#today').textContent=a.filter(x=>day(x.created_at)===today()).length;
+ chart(v,i,a);
+ const H=[...v.map(x=>[x.created_at,'Visita',x.source+(x.is_returning?' · recurrente':'')]),...i.map(x=>[x.created_at,'Intención','—']),...a.map(x=>[x.created_at,'Asistencia','registrada']),...e.map(x=>[x.created_at,'Video',x.event])].sort((x,y)=>y[0]<x[0]?-1:1).slice(0,60);
+ $('#t').innerHTML='<tr><th>Fecha</th><th>Tipo</th><th>Detalle</th></tr>'+H.map(r=>`<tr><td>${new Date(r[0]).toLocaleString()}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+ $('#up').textContent='Actualizado '+new Date().toLocaleTimeString()}
+function chart(v,i,a){const c=$('#ch'),r=devicePixelRatio||1,W=c.clientWidth,H=c.clientHeight;c.width=W*r;c.height=H*r;const x=c.getContext('2d');x.scale(r,r);
+ const days=[];for(let d=new Date($('#d1').value);d<=new Date($('#d2').value);d=new Date(+d+864e5))days.push(day(+d+36e5));
+ const S=[[v,'#2340ff'],[i,'#d4a53a'],[a,'#7fe3a0']].map(([arr,col])=>[days.map(d=>arr.filter(z=>day(z.created_at)===d).length),col]);
+ const mx=Math.max(1,...S.flatMap(s=>s[0])),bw=(W-40)/days.length;x.font='10px Roboto';x.fillStyle='#b9bec7';
+ days.forEach((d,k)=>{S.forEach(([vals,col],j)=>{const h=vals[k]/mx*(H-40);x.fillStyle=col;x.fillRect(30+k*bw+j*(bw/3.4),H-20-h,bw/3.6,h)});if(days.length<16){x.fillStyle='#b9bec7';x.fillText(d.slice(5),30+k*bw,H-6)}});
+ x.fillStyle='#b9bec7';x.fillText('máx '+mx,2,12);x.fillStyle='#2340ff';x.fillText('■ visitas',60,12);x.fillStyle='#d4a53a';x.fillText('■ intenciones',120,12);x.fillStyle='#7fe3a0';x.fillText('■ asistencias',200,12)}
+$('#plus').onclick=async()=>{await sb.from('attendance').insert({event_date:CFG.EVENT_DATE});load()};
+$('#minus').onclick=async()=>{const{data}=await sb.from('attendance').select('id').order('created_at',{ascending:false}).limit(1);if(data&&data[0])await sb.from('attendance').delete().eq('id',data[0].id);load()};
+init();
+</script></body></html>
